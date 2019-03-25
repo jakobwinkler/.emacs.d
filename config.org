@@ -211,6 +211,14 @@ Delete current window with =w d=.
 (evil-leader/set-key "w d" 'evil-window-delete)
 #+END_SRC
 
+Allow switching buffers with =b p= and =b n=. Delete buffers with =b d=.
+
+#+BEGIN_SRC emacs-lisp
+(evil-leader/set-key "b p" 'evil-prev-buffer)
+(evil-leader/set-key "b n" 'evil-next-buffer)
+(evil-leader/set-key "b d" 'evil-delete-buffer)
+#+END_SRC
+
 * Configure =helm=
 
 Load in =helm=, a great framework for incremental completion,
