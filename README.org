@@ -17,4 +17,4 @@ first run and then loads in all the other packages. This means that
 cloning this repository and then opening emacs will install everything
 that's needed for the config to work automagically.
 
-=logo.png= is taken from [emacs.sexy](https://emacs.sexy/), [GPL licensed](https://github.com/picandocodigo/emacs.sexy/blob/gh-pages/LICENSE).
+=logo.png= is taken from [[https://emacs.sexy/][emacs.sexy]], [[https://github.com/picandocodigo/emacs.sexy/blob/gh-pages/LICENSE][GPL licensed]].
