@@ -1,0 +1,251 @@
+* Emacs Configuration
+
+This is my emacs configuration. This was heavily inspired by Harry Schwartz
+(you can check github.com/hrs or search for a great talk about emacs by him.
+
+* Configure =use-package=
+
+This file uses =use-package= to install any further packages. =use-package=
+itself was already set up in =init.el=. Here I'm making sure that missing
+packages are always installed, compiled and updated, so it works as expected
+for any of the following sections.
+
+#+BEGIN_SRC emacs-lisp
+(setq use-package-always-ensure t)
+
+(use-package auto-compile
+  :config (auto-compile-on-load-mode))
+
+(setq load-prefer-newer t)
+#+END_SRC
+
+* Helper Functions
+
+The following is just a shorthand for lambda functions that's
+mostly used for =evil-leader= keybindings, since they have to
+be interactive
+
+ - TODO It would be great if we could add an alias for =which-key= somehow.
+
+#+BEGIN_SRC emacs-lisp
+(defmacro λ! (&rest body)
+  `(lambda () (interactive) ,@body))
+#+END_SRC
+
+* Backup behavior
+
+Emacs usually creates backup files in the same directory as the actual files.
+I don't really like that. Setting these up to put them all in the same folder
+(just to be safe) and keeping a few of them.
+
+#+BEGIN_SRC emacs-lisp
+(setq backup-directory-alist '(("." . "~/.backups")))
+(setq backup-by-copying t)
+(setq delete-old-versions t
+      kept-new-versions 4
+      kept-old-versions 2
+      version-control t)
+#+END_SRC
+
+* Configure =evil-mode=
+
+Vim emulation. With out this (and =helm=) I'd be hopelessly lost in emacs. Set
+up =evil= and some sane defaults.
+
+We need to load this pretty early so that other packages can use =evil-leader=
+keybinds.
+
+- TODO Find a way to make =dashboard= work properly (disabling =evil= also
+  disables Leader-keybinds. Leaving it activated breaks =dashboard= keybinds :(
+
+#+BEGIN_SRC emacs-lisp
+(setq evil-want-abbrev-expand-on-insert-exit nil)
+(use-package evil
+  :config
+  ;; (evil-set-initial-state 'dashboard-mode 'normal)
+  (evil-mode 1))
+#+END_SRC
+
+Enable =evil= in =org-agenda=:
+
+#+BEGIN_SRC emacs-lisp
+(use-package evil-org
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook (λ! (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+#+END_SRC
+
+Set up =evil-leader= with =<SPC>= as the leader key (like spacemacs).
+
+#+BEGIN_SRC emacs-lisp
+(use-package evil-leader
+  :config
+  (evil-leader/set-leader "<SPC>")
+  (evil-leader-mode 1)
+  (global-evil-leader-mode 1))
+#+END_SRC
+
+* Replace Default Buffer with =dashboard=
+
+The package =dashboard= replaces the sucky default buffer with a helpful
+list of recent files, projects and bookmarks. Additionally,
+=initial-buffer-choice= is set, so that new =emacsclients= also use this.
+
+#+BEGIN_SRC emacs-lisp
+(use-package dashboard
+  :config
+  (setq initial-buffer-choice (λ! (get-buffer "*dashboard*")))
+  (setq dashboard-banner-logo-title "Emacs Dashboard")
+  (setq dashboard-startup-banner "~/.emacs.d/logo.png")
+  (setq dashboard-center-content t)
+  (dashboard-setup-startup-hook))
+#+END_SRC
+
+* Theming/Appearance
+  
+  - TODO this is starting to get really long, maybe split into separate parts?
+
+Use =fira-code= as default font. Also bump up the font size because my eyes are
+bad. Unfortunately, =emacs= does not support font ligatures (yet).
+
+#+BEGIN_SRC emacs-lisp
+(set-default-font "Fira Code 13")
+#+END_SRC
+
+I use =spacemacs-theme= for now. Emacs 24+ supports theming out of
+the box, so we just have to fetch the actual theme from MELPA and
+turn it on
+
+#+BEGIN_SRC emacs-lisp
+(use-package spacemacs-theme
+  :defer t
+  :init (load-theme 'spacemacs-light t))
+#+END_SRC
+
+Next, load in the =powerline= from =spacemacs= as well.
+
+#+BEGIN_SRC emacs-lisp
+(use-package spaceline
+  :config
+  (spaceline-spacemacs-theme))
+#+END_SRC
+
+I don't like/need things like the menu bars and scroll bars.
+
+#+BEGIN_SRC emacs-lisp
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+(scroll-bar-mode -1)
+(set-window-scroll-bars (minibuffer-window) nil nil)
+#+END_SRC
+
+Always show line numbers, except in org mode where the folding breaks.
+
+#+BEGIN_SRC emacs-lisp
+(setq linum-format "%d ")
+(global-linum-mode)
+(add-hook 'org-mode-hook (λ! (linum-mode 0)))
+#+END_SRC
+
+Lastly, activate =fill-column-indicator= to keep me from writing
+overly long lines.
+
+#+BEGIN_SRC emacs-lisp
+(use-package fill-column-indicator
+  :config
+  (setq fci-rule-column 80)
+  (setq fci-rule-use-dashes 1)
+  (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+  (global-fci-mode 1))
+#+END_SRC
+
+* Quick File Access
+
+Some files need to be edited a lot (mostly configs and org-journals). Provide
+some handy keybinds for them here.
+
+#+BEGIN_SRC emacs-lisp
+; Mnemonic: "config"
+(evil-leader/set-key "f c" (λ! (find-file "~/.emacs.d/config.org")))
+; Mnemonic: "notes"
+(evil-leader/set-key "f n" (λ! (find-file "~/Documents/notes.org")))
+; Mnemonic: "thesis"
+(evil-leader/set-key "f t" (λ! (find-file "~/Documents/fh/thesis/thesis.org")))
+; Mnemonic: "home"
+(evil-leader/set-key "b h" (λ! (find-file "~/.emacs.d/config.org")))
+#+END_SRC
+
+* Window Management
+
+First of all, use spacemacs's =winum= to get numbered windows for easy switching,
+then bind =<Leader> {n}= to =winum-select-window-{n}=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package winum
+  :config
+  (evil-leader/set-key "1" 'winum-select-window-1)
+  (evil-leader/set-key "2" 'winum-select-window-2)
+  (evil-leader/set-key "3" 'winum-select-window-3)
+  (evil-leader/set-key "4" 'winum-select-window-4)
+  (evil-leader/set-key "5" 'winum-select-window-5)
+  (evil-leader/set-key "6" 'winum-select-window-6)
+  (evil-leader/set-key "7" 'winum-select-window-7)
+  (evil-leader/set-key "8" 'winum-select-window-8)
+  (evil-leader/set-key "9" 'winum-select-window-9)
+  (setq winum-auto-setup-mode-line nil)
+  (winum-mode 1))
+#+END_SRC
+
+Additionally, allow splitting windows using =w /= and =w -= . These windows
+will be automatically numbered by =winum= anyway.
+
+#+BEGIN_SRC emacs-lisp
+(evil-leader/set-key "w /" 'split-window-right)
+(evil-leader/set-key "w -" 'split-window-below)
+#+END_SRC
+
+Delete current window with =w d=.
+
+#+BEGIN_SRC emacs-lisp
+(evil-leader/set-key "w d" 'evil-window-delete)
+#+END_SRC
+
+* Configure =helm=
+
+Load in =helm=, a great framework for incremental completion,
+then, as always, set up keybinds with =evil=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package helm
+  :config
+  (evil-leader/set-key "<SPC>" 'helm-M-x)
+  (evil-leader/set-key "f f" 'helm-find-files)
+  (evil-leader/set-key "f r" 'helm-recentf)
+  (evil-leader/set-key "b b" 'helm-mini)
+  (add-to-list 'helm-boring-file-regexp-list "^\\.")
+  (add-to-list 'helm-boring-file-regexp-list "~$")
+  (helm-mode 1))
+#+END_SRC
+
+Also get =helm-descbinds=, which allows to search for keybinds
+using =C-h=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package helm-descbinds
+  :config
+  (helm-descbinds-mode))
+#+END_SRC
+
+* Configure =which-key=
+
+=which-key= uses the minibuffer to interactively drill down into
+keybinds. Neato!
+
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :config
+  (which-key-mode))
+#+END_SRC
