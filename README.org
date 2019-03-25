@@ -1,10 +1,14 @@
 * My emacs configuration
 
-This is an emacs configuration heavily inspired by spacemacs and
-Harry Schwartz's config.
+This is an emacs configuration heavily inspired by 
+[[http://spacemacs.org/][Spacemacs]] and 
+[[https://github.com/hrs/dotfiles/tree/master/emacs][Harry Schwartz's config]].
 
-There's some boilerplate setup code in init.el, everything else
-is configured in config.org and loaded through org-babel.
+There's some boilerplate setup code in
+[[https://github.com/jakobwinkler/.emacs.d/blob/master/init.el][init.el]],
+everything else is configured in
+[[https://github.com/jakobwinkler/.emacs.d/blob/master/config.org][config.org]]
+and loaded through org-babel.
 
 ** Usage
 
