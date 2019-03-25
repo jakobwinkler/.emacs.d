@@ -174,8 +174,6 @@ some handy keybinds for them here.
 (evil-leader/set-key "f n" (λ! (find-file "~/Documents/notes.org")))
 ; Mnemonic: "thesis"
 (evil-leader/set-key "f t" (λ! (find-file "~/Documents/fh/thesis/thesis.org")))
-; Mnemonic: "home"
-(evil-leader/set-key "b h" (λ! (find-file "~/.emacs.d/config.org")))
 #+END_SRC
 
 * Window Management
