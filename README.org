@@ -1,0 +1,18 @@
+* My emacs configuration
+
+This is an emacs configuration heavily inspired by spacemacs and
+Harry Schwartz's config.
+
+There's some boilerplate setup code in init.el, everything else
+is configured in config.org and loaded through org-babel.
+
+** Usage
+
+If you don't already have an emacs configuration locally you can
+just clone this right into your home directory. You don't even
+need to provide a path since this repository is called .emacs.d! :)
+
+This configuration is set up so that use-package installs itself on
+first run and then loads in all the other packages. This means that
+cloning this repository and then opening emacs will install everything
+that's needed for the config to work automagically.
