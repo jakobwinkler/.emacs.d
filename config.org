@@ -169,11 +169,14 @@ some handy keybinds for them here.
 
 #+BEGIN_SRC emacs-lisp
 ; Mnemonic: "config"
-(evil-leader/set-key "f c" (λ! (find-file "~/.emacs.d/config.org")))
+(evil-leader/set-key "f c" (defalias (make-symbol "edit-config")
+                              (λ! (find-file "~/.emacs.d/config.org"))))
 ; Mnemonic: "notes"
-(evil-leader/set-key "f n" (λ! (find-file "~/Documents/notes.org")))
+(evil-leader/set-key "f n" (defalias (make-symbol "edit-notes")
+                              (λ! (find-file "~/Documents/notes.org"))))
 ; Mnemonic: "thesis"
-(evil-leader/set-key "f t" (λ! (find-file "~/Documents/fh/thesis/thesis.org")))
+(evil-leader/set-key "f t" (defalias (make-symbol "edit-thesis-notes")
+                              (λ! (find-file "~/Documents/fh/thesis/thesis.org"))))
 #+END_SRC
 
 * Window Management
