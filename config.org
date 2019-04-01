@@ -258,3 +258,16 @@ keybinds. Neato!
   :config
   (which-key-mode))
 #+END_SRC
+* Configure =projectile=
+
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :config
+  (setq projectile-completion-system 'helm))
+ 
+(use-package helm-projectile
+  :config
+  (evil-leader/set-key "p f" 'helm-projectile-find-file)
+  (helm-projectile-on))
+
+#+END_SRC
