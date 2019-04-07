@@ -3,7 +3,7 @@
 This is my emacs configuration. This was heavily inspired by Harry Schwartz
 (you can check github.com/hrs or search for a great talk about emacs by him.
 
-* Configure =use-package=
+* Setup =use-package=
 
 This file uses =use-package= to install any further packages. =use-package=
 itself was already set up in =init.el=. Here I'm making sure that missing
@@ -24,8 +24,6 @@ for any of the following sections.
 The following is just a shorthand for lambda functions that's
 mostly used for =evil-leader= keybindings, since they have to
 be interactive
-
- - TODO It would be great if we could add an alias for =which-key= somehow.
 
 #+BEGIN_SRC emacs-lisp
 (defmacro λ! (&rest body)
@@ -54,9 +52,6 @@ up =evil= and some sane defaults.
 
 We need to load this pretty early so that other packages can use =evil-leader=
 keybinds.
-
-- TODO Find a way to make =dashboard= work properly (disabling =evil= also
-  disables Leader-keybinds. Leaving it activated breaks =dashboard= keybinds :(
 
 #+BEGIN_SRC emacs-lisp
 (setq evil-want-abbrev-expand-on-insert-exit nil)
@@ -106,23 +101,32 @@ list of recent files, projects and bookmarks. Additionally,
 
 * Theming/Appearance
   
-  - TODO this is starting to get really long, maybe split into separate parts?
-
 Use =fira-code= as default font. Also bump up the font size because my eyes are
 bad. Unfortunately, =emacs= does not support font ligatures (yet).
 
 #+BEGIN_SRC emacs-lisp
 (set-default-font "Fira Code 13")
+(setq default-frame-alist '((font . "Fira Code 13")))
 #+END_SRC
 
-I use =spacemacs-theme= for now. Emacs 24+ supports theming out of
+I use =nord-theme= for now. Emacs 24+ supports theming out of
 the box, so we just have to fetch the actual theme from MELPA and
-turn it on
+turn it on.
+
+Note that =nord= won't actually work with =emacsclient= because of
+an issue in the package. If you initialize a new config from this
+file you'll have to apply [https://github.com/arcticicestudio/nord-emacs/pull/68]
+if the issue is not yet fixed.
 
 #+BEGIN_SRC emacs-lisp
-(use-package spacemacs-theme
+(use-package nord-theme
   :defer t
-  :init (load-theme 'spacemacs-light t))
+  :init
+  (if (daemonp)
+    (add-hook 'after-make-frame-functions
+      (lambda (frame)
+        (load-theme 'nord t)))
+    (load-theme 'nord t)))
 #+END_SRC
 
 Next, load in the =powerline= from =spacemacs= as well.
@@ -133,14 +137,20 @@ Next, load in the =powerline= from =spacemacs= as well.
   (spaceline-spacemacs-theme))
 #+END_SRC
 
-I don't like/need things like the menu bars and scroll bars.
+I don't like/need things like the menu bars and scroll bars. Also set 
+buffers be transparent by default.
 
 #+BEGIN_SRC emacs-lisp
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode -1)
 (set-window-scroll-bars (minibuffer-window) nil nil)
+
+(set-frame-parameter (selected-frame) 'alpha '(95 . 75))
+(add-to-list 'default-frame-alist '(alpha . (95 . 75)))
 #+END_SRC
+
+* Linum Mode
 
 Always show line numbers, except in org mode where the folding breaks.
 
@@ -150,15 +160,24 @@ Always show line numbers, except in org mode where the folding breaks.
 (add-hook 'org-mode-hook (λ! (linum-mode 0)))
 #+END_SRC
 
-Lastly, activate =fill-column-indicator= to keep me from writing
-overly long lines.
+* FCI mode
+  
+Activate =fill-column-indicator= to keep me from writing
+overly long lines. The indicator is disabled on all special buffers
+(wrapped in *s) and in =dired-mode=.
 
 #+BEGIN_SRC emacs-lisp
 (use-package fill-column-indicator
   :config
   (setq fci-rule-column 80)
   (setq fci-rule-use-dashes 1)
-  (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+  (setq fci-rule-width 1)
+  (define-globalized-minor-mode global-fci-mode fci-mode
+  (lambda ()
+    (if (and
+      (not (string-match "^\*.*\*$" (buffer-name)))
+      (not (eq major-mode 'dired-mode)))
+    (fci-mode 1))))
   (global-fci-mode 1))
 #+END_SRC
 
@@ -222,6 +241,18 @@ Allow switching buffers with =b p= and =b n=. Delete buffers with =b d=.
 (evil-leader/set-key "b d" 'evil-delete-buffer)
 #+END_SRC
 
+* Lisp Trickery
+
+Here is some setup to make lisp hacking a bit easier. The following
+snippet allows evaluating the currently selected expression or the
+whole buffer.
+
+#+BEGIN_SRC emacs-lisp
+(evil-leader/set-key "e l" 'eval-last-sexp)
+(evil-leader/set-key "e b" 'eval-buffer)
+(evil-leader/set-key "e e" 'eval-expression)
+#+END_SRC
+
 * Configure =helm=
 
 Load in =helm=, a great framework for incremental completion,
@@ -270,4 +301,51 @@ keybinds. Neato!
   (evil-leader/set-key "p f" 'helm-projectile-find-file)
   (helm-projectile-on))
 
+#+END_SRC
+
+* Configure =org-pomodoro=
+
+Org-pomodoro allows starting pomodoros on org tasks , automatically
+tracking spent time and playing audio notifications when pomodoros and
+breaks start/end.
+
+The default modeline sucks, so I'm using the package's hooks to write
+to a file that I display on my =i3bar=.
+
+This doesn't exactly work :/
+
+#+BEGIN_SRC emacs-lisp
+
+(setq jwinkler-org-pomodoro-minutes 0)
+(setq jwinkler-org-pomodoro-file "~/tmp/.org-pomodoro")
+
+(defun pomodoro-start ()
+  "Called when starting a pomodoro. Writes the time to a
+   temporary file to read with i3bar"
+  (setq jwinkler-org-pomodoro-minutes 25)
+  (with-temp-file jwinkler-org-pomodoro-file
+    (insert "25 min"))
+)
+
+(defun pomodoro-tick ()
+  "Called whenever a pomodoro ticks (every second). Updates
+   the remaining minutes in the temporary file"
+  (setq jwinkler-org-pomodoro-minutes (- (/ org-pomodoro-remaining-seconds 60) 1))
+  (with-temp-file jwinkler-org-pomodoro-file
+    (insert "tick"))
+)
+
+(defun pomodoro-done()
+  "Called whenever a pomodoro is finished (or killed). Updates
+   the temporary file to say inactive."
+  (with-temp-file jwinkler-org-pomodoro-file
+    (insert "done."))
+)   
+
+(use-package org-pomodoro
+;;  :config
+;;  (add-hook 'org-pomodoro-started-hook 'pomodoro-start)
+;;  (add-hook 'org-pomodoro-tick-hook 'pomodoro-tick)
+;;  (add-hook 'org-pomodoro-finished-hook 'pomodoro-done)
+)
 #+END_SRC
