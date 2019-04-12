@@ -160,7 +160,7 @@ Always show line numbers, except in org mode where the folding breaks.
 (add-hook 'org-mode-hook (λ! (linum-mode 0)))
 #+END_SRC
 
-* FCI mode
+* FCI and Autofill
   
 Activate =fill-column-indicator= to keep me from writing
 overly long lines. The indicator is disabled on all special buffers
@@ -179,6 +179,20 @@ overly long lines. The indicator is disabled on all special buffers
       (not (eq major-mode 'dired-mode)))
     (fci-mode 1))))
   (global-fci-mode 1))
+#+END_SRC
+
+* Toggles
+  
+The following keybinds toggle certain things that frequently need
+to be changed (mostly modes).
+
+#+BEGIN_SRC emacs-lisp
+;; Mnemonic "fill"
+(evil-leader/set-key "t f" 'auto-fill-mode)
+;; Mnemonic "indicator"
+(evil-leader/set-key "t i" 'fci-mode)
+;; Mnemonic "linum"
+(evil-leader/set-key "t l" 'linum-mode)
 #+END_SRC
 
 * Quick File Access
