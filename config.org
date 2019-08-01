@@ -101,12 +101,12 @@ list of recent files, projects and bookmarks. Additionally,
 
 * Theming/Appearance
   
-Use =fira-code= as default font. Also bump up the font size because my eyes are
+Use =fira= as default font. Also bump up the font size because my eyes are
 bad. Unfortunately, =emacs= does not support font ligatures (yet).
 
 #+BEGIN_SRC emacs-lisp
-(set-default-font "Fira Code 13")
-(setq default-frame-alist '((font . "Fira Code 13")))
+(set-default-font "Fira Mono 13")
+(setq default-frame-alist '((font . "Fira Mono 13")))
 #+END_SRC
 
 I use =nord-theme= for now. Emacs 24+ supports theming out of
