@@ -212,6 +212,14 @@ some handy keybinds for them here.
                               (λ! (find-file "~/Documents/fh/thesis/thesis.org"))))
 #+END_SRC
 
+Also create some keybinds for links within files:
+
+#+BEGIN_SRC emacs-lisp
+; Mnemonic: "go"
+(evil-leader/set-key "l g" (defalias (make-symbol "link-go")
+                              (λ! (org-open-at-point))))
+#+END_SRC
+
 * Window Management
 
 First of all, use spacemacs's =winum= to get numbered windows for easy switching,
@@ -279,8 +287,8 @@ then, as always, set up keybinds with =evil=.
   (evil-leader/set-key "f f" 'helm-find-files)
   (evil-leader/set-key "f r" 'helm-recentf)
   (evil-leader/set-key "b b" 'helm-mini)
-  (add-to-list 'helm-boring-file-regexp-list "^\\.")
-  (add-to-list 'helm-boring-file-regexp-list "~$")
+  (setq helm-ff-skip-boring-files t)
+  (customize-set-variable 'helm-boring-file-regexp-list (cons "^\\..+" helm-boring-file-regexp-list))
   (helm-mode 1))
 #+END_SRC
 
@@ -362,4 +370,16 @@ This doesn't exactly work :/
 ;;  (add-hook 'org-pomodoro-tick-hook 'pomodoro-tick)
 ;;  (add-hook 'org-pomodoro-finished-hook 'pomodoro-done)
 )
+#+END_SRC
+* Get some more packages
+
+This is the place to add more packages that don't require a lot of
+configuration.
+
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 #+END_SRC

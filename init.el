@@ -3,8 +3,9 @@
 ;; This is mostly inspired by Harry Schwartz (github.com/hrs)
 
 (require 'package)
-(add-to-list 'package-archives
-            '("melpa" . "https://melpa.org/packages/") t)
+(setq package-archives
+            '(("melpa" . "http://melpa.org/packages/")
+              ("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
 
 ;; Make sure that use-package is loaded to bootstrap everything else.
