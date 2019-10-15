@@ -45,6 +45,22 @@ I don't really like that. Setting these up to put them all in the same folder
       version-control t)
 #+END_SRC
 
+* Configure =org=
+
+This section sets up general configuration for =org-mode=.
+
+#+BEGIN_SRC emacs-lisp
+(require 'ox-beamer)
+(require 'ox-latex)
+(setq org-export-allow-bind-keywords t)
+(add-to-list 'org-latex-classes
+             '("beamer"
+               "\\documentclass\[presentation\]\{beamer\}"
+               ("\\section\{%s\}" . "\\section*\{%s\}")
+               ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+               ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
+#+END_SRC
+
 * Configure =evil-mode=
 
 Vim emulation. With out this (and =helm=) I'd be hopelessly lost in emacs. Set
