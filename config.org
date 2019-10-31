@@ -363,3 +363,40 @@ This doesn't exactly work :/
 ;;  (add-hook 'org-pomodoro-finished-hook 'pomodoro-done)
 )
 #+END_SRC
+* Configure =vhdl-mode=
+
+#+BEGIN_SRC emacs-lisp
+(setq vhdl-company-name "Jakob Winkler")
+(setq vhdl-clock-name "clk_i")
+(setq vhdl-reset-name "reset_in")
+(setq vhdl-testbench-declarations "  -- clock
+  signal clk : std_ulogic := '1';
+")
+(setq vhdl-testbench-entity-file-name (quote (".*" . "\\&-ea")))
+(setq vhdl-testbench-entity-name (quote (".*" . "tb_\\&")))
+(setq vhdl-testbench-include-configuration nil)
+(setq vhdl-testbench-include-library nil)
+(setq vhdl-testbench-statements
+   "  -- clock generation
+  clk <= not clk after 10 ns;
+
+  stimul: process
+  begin
+    wait until rising_edge(clk);
+  end process stimul;
+")
+(setq vhdl-file-header
+"-------------------------------------------------------------------------------
+-- Title      : <title string>
+-- Project    : <project>
+-------------------------------------------------------------------------------
+-- File       : <filename>
+-- Standard   : <standard>
+-- <copyright>-------------------------------------------------------------------------------
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+")
+#+END_SRC
