@@ -45,6 +45,22 @@ I don't really like that. Setting these up to put them all in the same folder
       version-control t)
 #+END_SRC
 
+* Configure =org=
+
+This section sets up general configuration for =org-mode=.
+
+#+BEGIN_SRC emacs-lisp
+(require 'ox-beamer)
+(require 'ox-latex)
+(setq org-export-allow-bind-keywords t)
+(add-to-list 'org-latex-classes
+             '("beamer"
+               "\\documentclass\[presentation\]\{beamer\}"
+               ("\\section\{%s\}" . "\\section*\{%s\}")
+               ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+               ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
+#+END_SRC
+
 * Configure =evil-mode=
 
 Vim emulation. With out this (and =helm=) I'd be hopelessly lost in emacs. Set
@@ -101,12 +117,12 @@ list of recent files, projects and bookmarks. Additionally,
 
 * Theming/Appearance
   
-Use =fira-code= as default font. Also bump up the font size because my eyes are
+Use =fira= as default font. Also bump up the font size because my eyes are
 bad. Unfortunately, =emacs= does not support font ligatures (yet).
 
 #+BEGIN_SRC emacs-lisp
-(set-default-font "Fira Code 13")
-(setq default-frame-alist '((font . "Fira Code 13")))
+(set-default-font "Fira Mono 13")
+(setq default-frame-alist '((font . "Fira Mono 13")))
 #+END_SRC
 
 I use =nord-theme= for now. Emacs 24+ supports theming out of
@@ -212,6 +228,14 @@ some handy keybinds for them here.
                               (λ! (find-file "~/Documents/fh/thesis/thesis.org"))))
 #+END_SRC
 
+Also create some keybinds for links within files:
+
+#+BEGIN_SRC emacs-lisp
+; Mnemonic: "go"
+(evil-leader/set-key "l g" (defalias (make-symbol "link-go")
+                              (λ! (org-open-at-point))))
+#+END_SRC
+
 * Window Management
 
 First of all, use spacemacs's =winum= to get numbered windows for easy switching,
@@ -279,8 +303,8 @@ then, as always, set up keybinds with =evil=.
   (evil-leader/set-key "f f" 'helm-find-files)
   (evil-leader/set-key "f r" 'helm-recentf)
   (evil-leader/set-key "b b" 'helm-mini)
-  (add-to-list 'helm-boring-file-regexp-list "^\\.")
-  (add-to-list 'helm-boring-file-regexp-list "~$")
+  (setq helm-ff-skip-boring-files t)
+  (customize-set-variable 'helm-boring-file-regexp-list (cons "^\\..+" helm-boring-file-regexp-list))
   (helm-mode 1))
 #+END_SRC
 
@@ -363,6 +387,7 @@ This doesn't exactly work :/
 ;;  (add-hook 'org-pomodoro-finished-hook 'pomodoro-done)
 )
 #+END_SRC
+
 * Configure =vhdl-mode=
 
 #+BEGIN_SRC emacs-lisp
@@ -399,4 +424,16 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 ")
+
+* Get some more packages
+
+This is the place to add more packages that don't require a lot of
+configuration.
+
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 #+END_SRC
