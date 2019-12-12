@@ -45,25 +45,9 @@ I don't really like that. Setting these up to put them all in the same folder
       version-control t)
 #+END_SRC
 
-* Configure =org=
-
-This section sets up general configuration for =org-mode=.
-
-#+BEGIN_SRC emacs-lisp
-(require 'ox-beamer)
-(require 'ox-latex)
-(setq org-export-allow-bind-keywords t)
-(add-to-list 'org-latex-classes
-             '("beamer"
-               "\\documentclass\[presentation\]\{beamer\}"
-               ("\\section\{%s\}" . "\\section*\{%s\}")
-               ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
-               ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
-#+END_SRC
-
 * Configure =evil-mode=
 
-Vim emulation. With out this (and =helm=) I'd be hopelessly lost in emacs. Set
+Vim emulation. Without this (and =helm=) I'd be hopelessly lost in emacs. Set
 up =evil= and some sane defaults.
 
 We need to load this pretty early so that other packages can use =evil-leader=
@@ -77,7 +61,61 @@ keybinds.
   (evil-mode 1))
 #+END_SRC
 
-Enable =evil= in =org-agenda=:
+Set up =evil-leader= with =<SPC>= as the leader key (like spacemacs).
+
+#+BEGIN_SRC emacs-lisp
+(use-package evil-leader
+  :config
+  (evil-leader/set-leader "<SPC>")
+  (evil-leader-mode 1)
+  (global-evil-leader-mode 1))
+#+END_SRC
+
+* Configure =org=
+  
+This section sets up general configuration for =org-mode=. I use =org=
+extensively to organize my work. Thus, this configures some additional
+TODO keywords and some evil hotkeys for easier interaction. No package
+is loaded because =org= is shipped with emacs.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-todo-keywords
+      '((sequence "TODO" "DOING" "DONE" "CANCELED" "EVENTUALLY")))
+(setq org-todo-keyword-faces
+      '(("TODO" . "orange") ("DOING" . "yellow")
+        ("DONE" . "light green") ("CANCELED" . "red")
+        ("EVENTUALLY" . "light blue")))
+
+;; Mnemonic "link follow"
+(evil-leader/set-key "l f" 'org-open-at-point)
+;; Mnemonic "link insert"
+(evil-leader/set-key "l i" 'org-insert-link)
+;; Mnemonic "link yank"
+(evil-leader/set-key "l y" 'org-store-link)
+;; Mnemonic "link paste"
+(evil-leader/set-key "l p" 'org-insert-last-stored-link)
+;; Mnemonic "link toggle"
+(evil-leader/set-key "l t" 'org-toggle-link-display)
+#+END_SRC
+
+The following sets up org exporters for LaTeX and beamer. With this
+setup I can easily export beamer presentations using my preferred
+theme, *metropolis*. For custom font support, set the LaTeX processor
+to LuaLaTeX in the presentation's config.
+
+#+BEGIN_SRC emacs-lisp
+(require 'ox-beamer)
+(require 'ox-latex)
+(setq org-export-allow-bind-keywords t)
+(add-to-list 'org-latex-classes
+             '("beamer"
+               "\\documentclass\[presentation\]\{beamer\}"
+               ("\\section\{%s\}" . "\\section*\{%s\}")
+               ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+               ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
+#+END_SRC
+
+Finally, enable =evil= in =org-agenda=:
 
 #+BEGIN_SRC emacs-lisp
 (use-package evil-org
@@ -87,16 +125,6 @@ Enable =evil= in =org-agenda=:
   (add-hook 'evil-org-mode-hook (λ! (evil-org-set-key-theme)))
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
-#+END_SRC
-
-Set up =evil-leader= with =<SPC>= as the leader key (like spacemacs).
-
-#+BEGIN_SRC emacs-lisp
-(use-package evil-leader
-  :config
-  (evil-leader/set-leader "<SPC>")
-  (evil-leader-mode 1)
-  (global-evil-leader-mode 1))
 #+END_SRC
 
 * Replace Default Buffer with =dashboard=
