@@ -143,6 +143,19 @@ list of recent files, projects and bookmarks. Additionally,
   (dashboard-setup-startup-hook))
 #+END_SRC
 
+Additional keybinds for =dashboard=. Because =dashboard= shows
+bookmarks as well, setting up key bindings for bookmarks here too.
+
+#+BEGIN_SRC emacs-lisp
+;; Mnemonic "refresh"
+(evil-leader/set-key "d r" 'dashboard-refresh-buffer)
+
+;; Mnemonic "mark"
+(evil-leader/set-key "m m" 'bookmark-set)
+;; Mnemonic "delete"
+(evil-leader/set-key "m d" 'bookmark-delete)
+#+END_SRC
+
 * Theming/Appearance
   
 Use =fira= as default font. Also bump up the font size because my eyes are
