@@ -79,6 +79,30 @@ TODO keywords and some evil hotkeys for easier interaction. No package
 is loaded because =org= is shipped with emacs.
 
 #+BEGIN_SRC emacs-lisp
+(setq org-refile-targets '((nil :maxlevel . 9)
+                                (org-agenda-files :maxlevel . 9)))
+(setq org-outline-path-complete-in-steps nil)
+(setq org-refile-use-outline-path t)
+
+;; Mnemonic "org agenda"
+(evil-leader/set-key "o a" 'org-agenda)
+;; Mnemonic "org (clock) in"
+(evil-leader/set-key "o i" 'org-clock-in)
+;; Mnemonic "org (clock) out"
+(evil-leader/set-key "o o" 'org-clock-out)
+;; Mnemonic "org log"
+(evil-leader/set-key "o l" 'org-agenda-log-mode)
+;; Mnemonic "org capture"
+(evil-leader/set-key "o c" 'org-capture)
+;; Mnemonic "org refile"
+(evil-leader/set-key "o r" 'org-refile)
+#+END_SRC
+
+This part is mainly about configuring my work inside of =org=
+files. It adds custom TODO keywords and allows easy creation of links
+between sections or files.
+
+#+BEGIN_SRC emacs-lisp
 (setq org-todo-keywords
       '((sequence "TODO" "DOING" "DONE" "CANCELED" "EVENTUALLY")))
 (setq org-todo-keyword-faces
@@ -254,27 +278,15 @@ to be changed (mostly modes).
 
 * Quick File Access
 
-Some files need to be edited a lot (mostly configs and org-journals). Provide
-some handy keybinds for them here.
+Some files need to be edited a lot (mostly configs and
+org-journals). Provide some handy keybinds for them here. Update
+<2019-12-20 Fri>: this does not really work across machines. Removing
+file links for now.
 
 #+BEGIN_SRC emacs-lisp
 ; Mnemonic: "config"
 (evil-leader/set-key "f c" (defalias (make-symbol "edit-config")
                               (λ! (find-file "~/.emacs.d/config.org"))))
-; Mnemonic: "notes"
-(evil-leader/set-key "f n" (defalias (make-symbol "edit-notes")
-                              (λ! (find-file "~/Documents/notes.org"))))
-; Mnemonic: "thesis"
-(evil-leader/set-key "f t" (defalias (make-symbol "edit-thesis-notes")
-                              (λ! (find-file "~/Documents/fh/thesis/thesis.org"))))
-#+END_SRC
-
-Also create some keybinds for links within files:
-
-#+BEGIN_SRC emacs-lisp
-; Mnemonic: "go"
-(evil-leader/set-key "l g" (defalias (make-symbol "link-go")
-                              (λ! (org-open-at-point))))
 #+END_SRC
 
 * Window Management
