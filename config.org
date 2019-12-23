@@ -71,6 +71,16 @@ Set up =evil-leader= with =<SPC>= as the leader key (like spacemacs).
   (global-evil-leader-mode 1))
 #+END_SRC
 
+* Emacs rebinds
+
+I'm a vim user. Some keybinds are not ideal in vim, but equivalent
+emacs keybindings are also inconvenient. Rebind these to something useful
+
+#+BEGIN_SRC emacs-lisp
+;; Mnemonic "file save"
+(evil-leader/set-key "f s" 'save-buffer)
+#+END_SRC
+
 * Configure =org=
   
 This section sets up general configuration for =org-mode=. I use =org=
@@ -330,6 +340,17 @@ Allow switching buffers with =b p= and =b n=. Delete buffers with =b d=.
 (evil-leader/set-key "b p" 'evil-prev-buffer)
 (evil-leader/set-key "b n" 'evil-next-buffer)
 (evil-leader/set-key "b d" 'evil-delete-buffer)
+#+END_SRC
+
+* =eshell=
+
+=eshell= is a built-in shell + terminal emulator that can be used
+cross-platform. Since it works very well with =evil= out of the box we
+only set up some keybinds here.
+
+#+BEGIN_SRC emacs-lisp
+;; Mnemonic "shell open"
+(evil-leader/set-key "s o" 'eshell)
 #+END_SRC
 
 * Lisp Trickery
