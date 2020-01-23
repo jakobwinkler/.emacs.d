@@ -57,7 +57,6 @@ keybinds.
 (setq evil-want-abbrev-expand-on-insert-exit nil)
 (use-package evil
   :config
-  ;; (evil-set-initial-state 'dashboard-mode 'normal)
   (evil-mode 1))
 #+END_SRC
 
@@ -173,7 +172,34 @@ list of recent files, projects and bookmarks. Additionally,
   (setq initial-buffer-choice (λ! (get-buffer "*dashboard*")))
   (setq dashboard-banner-logo-title "Emacs Dashboard")
   (setq dashboard-startup-banner "~/.emacs.d/logo.png")
-  (setq dashboard-center-content t)
+  (setq dashboard-items '((projects . 5)
+                          (recents . 5)
+			  (bookmarks . 5)
+			  (agenda . 5)))
+  (setq dashboard-set-navigator t)
+  
+  ;; some wrapper functions to make dashboard play nice with evil
+  (defun dashboard-goto-projects ()
+    (interactive)
+    (funcall (local-key-binding "p")))
+  (defun dashboard-goto-recent ()
+    (interactive)
+    (funcall (local-key-binding "r")))
+  (defun dashboard-goto-agenda ()
+    (interactive)
+    (funcall (local-key-binding "a")))
+  (defun dashboard-goto-bookmarks ()
+    (interactive)
+    (funcall (local-key-binding "m")))
+
+
+  (evil-define-key 'normal dashboard-mode-map
+      "}" 'dashboard-next-section
+      "{" 'dashboard-previous-section
+      "p" 'dashboard-goto-projects
+      "r" 'dashboard-goto-recent
+      "a" 'dashboard-goto-agenda
+      "m" 'dashboard-goto-bookmarks)
   (dashboard-setup-startup-hook))
 #+END_SRC
 
@@ -183,6 +209,9 @@ bookmarks as well, setting up key bindings for bookmarks here too.
 #+BEGIN_SRC emacs-lisp
 ;; Mnemonic "refresh"
 (evil-leader/set-key "d r" 'dashboard-refresh-buffer)
+;; Mnemonic "buffer -> home"
+(evil-leader/set-key "b h" (defalias (make-symbol "buffer-home")
+                              (λ! (switch-to-buffer "*dashboard*"))))
 
 ;; Mnemonic "mark"
 (evil-leader/set-key "m m" 'bookmark-set)
@@ -406,9 +435,8 @@ keybinds. Neato!
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :config
-  (setq projectile-completion-system 'helm))
-
-
+  (setq projectile-completion-system 'helm)
+  (setq projectile-indexing-method 'alien))
  
 (use-package helm-projectile
   :config
@@ -474,7 +502,8 @@ This doesn't exactly work :/
 * Configure =vhdl-mode=
 
 #+BEGIN_SRC emacs-lisp
-(setq vhdl-company-name "Jakob Winkler")
+(setq vhdl-company-name "Silicon Austria Labs <jakob.winkler@silicon-austria.com")
+(setq vhdl-standard (quote (8 nil)))
 (setq vhdl-clock-name "clk_i")
 (setq vhdl-reset-name "reset_in")
 (setq vhdl-testbench-declarations "  -- clock
@@ -500,13 +529,14 @@ This doesn't exactly work :/
 -------------------------------------------------------------------------------
 -- File       : <filename>
 -- Standard   : <standard>
--- <copyright>-------------------------------------------------------------------------------
+<copyright>-------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 ")
+#+END_SRC
 
 * Get some more packages
 
