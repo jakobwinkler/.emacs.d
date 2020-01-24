@@ -41,7 +41,7 @@
 
    #+BEGIN_SRC emacs-lisp
 (setq backup-directory-alist
-      '(("." . ,(concat user-emacs-directory "backups"))))
+      '(("." . "~/.backups")))
 (setq backup-by-copying t)
 (setq delete-old-versions t
       kept-new-versions 4
