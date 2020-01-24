@@ -1,95 +1,116 @@
 * Emacs Configuration
 
-This is my emacs configuration. This was heavily inspired by Harry Schwartz
-(you can check github.com/hrs or search for a great talk about emacs by him.
+  This is my emacs configuration. This was heavily inspired by Harry
+  Schwartz (you can check github.com/hrs or search for a great talk
+  about emacs by him.
 
-* Setup =use-package=
+** Setup =use-package=
 
-This file uses =use-package= to install any further packages. =use-package=
-itself was already set up in =init.el=. Here I'm making sure that missing
-packages are always installed, compiled and updated, so it works as expected
-for any of the following sections.
+   This file uses =use-package= to install any further
+   packages. =use-package= itself was already set up in
+   =init.el=. Here I'm making sure that missing packages are always
+   installed, compiled and updated, so it works as expected for any of
+   the following sections.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (setq use-package-always-ensure t)
 
 (use-package auto-compile
   :config (auto-compile-on-load-mode))
 
 (setq load-prefer-newer t)
-#+END_SRC
+   #+END_SRC
 
-* Helper Functions
+** Helper Functions
 
-The following is just a shorthand for lambda functions that's
-mostly used for =evil-leader= keybindings, since they have to
-be interactive
+   The following is just a shorthand for lambda functions that's
+   mostly used for =evil-leader= keybindings, since they have to be
+   interactive
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (defmacro λ! (&rest body)
   `(lambda () (interactive) ,@body))
-#+END_SRC
+   #+END_SRC
 
-* Backup behavior
+** Backup behavior
 
-Emacs usually creates backup files in the same directory as the actual files.
-I don't really like that. Setting these up to put them all in the same folder
-(just to be safe) and keeping a few of them.
+   Emacs usually creates backup files in the same directory as the
+   actual files.  I don't really like that. Setting these up to put
+   them all in the same folder (just to be safe) and keeping a few of
+   them.
 
-#+BEGIN_SRC emacs-lisp
-(setq backup-directory-alist '(("." . "~/.backups")))
+   #+BEGIN_SRC emacs-lisp
+(setq backup-directory-alist
+      '(("." . ,(concat user-emacs-directory "backups"))))
 (setq backup-by-copying t)
 (setq delete-old-versions t
       kept-new-versions 4
       kept-old-versions 2
       version-control t)
-#+END_SRC
+   #+END_SRC
 
-* Configure =evil-mode=
+** Setup vim emulation
 
-Vim emulation. Without this (and =helm=) I'd be hopelessly lost in emacs. Set
-up =evil= and some sane defaults.
+   Vim emulation using =evil-mode=. Without this (and =helm=) I'd be
+   hopelessly lost in emacs. Set up =evil= and some sane defaults.
 
-We need to load this pretty early so that other packages can use =evil-leader=
-keybinds.
+   We need to load this pretty early so that other packages can use
+   =evil-leader= keybinds.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (setq evil-want-abbrev-expand-on-insert-exit nil)
 (use-package evil
   :config
   (evil-mode 1))
-#+END_SRC
+   #+END_SRC
 
-Set up =evil-leader= with =<SPC>= as the leader key (like spacemacs).
+   Set up =evil-leader= with =<SPC>= as the leader key (like
+   spacemacs).
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package evil-leader
   :config
   (evil-leader/set-leader "<SPC>")
   (evil-leader-mode 1)
   (global-evil-leader-mode 1))
-#+END_SRC
+   #+END_SRC
 
-* Emacs rebinds
+** Basic Emacs rebinds
 
-I'm a vim user. Some keybinds are not ideal in vim, but equivalent
-emacs keybindings are also inconvenient. Rebind these to something useful
+   I'm a vim user. Some keybinds are not ideal in vim, but equivalent
+   emacs keybindings are also inconvenient. Rebind these to something
+   useful.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 ;; Mnemonic "file save"
 (evil-leader/set-key "f s" 'save-buffer)
-#+END_SRC
 
-* Configure =org=
-  
-This section sets up general configuration for =org-mode=. I use =org=
-extensively to organize my work. Thus, this configures some additional
-TODO keywords and some evil hotkeys for easier interaction. No package
-is loaded because =org= is shipped with emacs.
+;; Mnemonic "mark"
+(evil-leader/set-key "m m" 'bookmark-set)
+;; Mnemonic "delete"
+(evil-leader/set-key "m d" 'bookmark-delete)
+   #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+   Additionally, setup keybinds for some not-so-default functionality
+   I like to use:
+
+   #+BEGIN_SRC emacs-lisp
+; Mnemonic: "config"
+(evil-leader/set-key "f c" (defalias (make-symbol "edit-config")
+			      (λ! (find-file "~/.emacs.d/config.org"))))
+   #+END_SRC
+
+** Configure =org=
+
+   This section sets up general configuration for =org-mode=. I use
+   =org= extensively to organize my work. Thus, this configures some
+   additional TODO keywords and some evil hotkeys for easier
+   interaction. No package is loaded because =org= is shipped with
+   emacs.
+
+   #+BEGIN_SRC emacs-lisp
 (setq org-refile-targets '((nil :maxlevel . 9)
-                                (org-agenda-files :maxlevel . 9)))
+				(org-agenda-files :maxlevel . 9)))
 (setq org-outline-path-complete-in-steps nil)
 (setq org-refile-use-outline-path t)
 
@@ -105,19 +126,19 @@ is loaded because =org= is shipped with emacs.
 (evil-leader/set-key "o c" 'org-capture)
 ;; Mnemonic "org refile"
 (evil-leader/set-key "o r" 'org-refile)
-#+END_SRC
+   #+END_SRC
 
-This part is mainly about configuring my work inside of =org=
-files. It adds custom TODO keywords and allows easy creation of links
-between sections or files.
+   This part is mainly about configuring my work inside of =org=
+   files. It adds custom TODO keywords and allows easy creation of
+   links between sections or files.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (setq org-todo-keywords
       '((sequence "TODO" "DOING" "DONE" "CANCELED" "EVENTUALLY")))
 (setq org-todo-keyword-faces
       '(("TODO" . "orange") ("DOING" . "yellow")
-        ("DONE" . "light green") ("CANCELED" . "red")
-        ("EVENTUALLY" . "light blue")))
+	("DONE" . "light green") ("CANCELED" . "red")
+	("EVENTUALLY" . "light blue")))
 
 ;; Mnemonic "link follow"
 (evil-leader/set-key "l f" 'org-open-at-point)
@@ -129,28 +150,28 @@ between sections or files.
 (evil-leader/set-key "l p" 'org-insert-last-stored-link)
 ;; Mnemonic "link toggle"
 (evil-leader/set-key "l t" 'org-toggle-link-display)
-#+END_SRC
+   #+END_SRC
 
-The following sets up org exporters for LaTeX and beamer. With this
-setup I can easily export beamer presentations using my preferred
-theme, *metropolis*. For custom font support, set the LaTeX processor
-to LuaLaTeX in the presentation's config.
+   The following sets up org exporters for LaTeX and beamer. With this
+   setup I can easily export beamer presentations using my preferred
+   theme, *metropolis*. For custom font support, set the LaTeX
+   processor to LuaLaTeX in the presentation's config.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (require 'ox-beamer)
 (require 'ox-latex)
 (setq org-export-allow-bind-keywords t)
 (add-to-list 'org-latex-classes
-             '("beamer"
-               "\\documentclass\[presentation\]\{beamer\}"
-               ("\\section\{%s\}" . "\\section*\{%s\}")
-               ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
-               ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
-#+END_SRC
+	     '("beamer"
+	       "\\documentclass\[presentation\]\{beamer\}"
+	       ("\\section\{%s\}" . "\\section*\{%s\}")
+	       ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+	       ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
+   #+END_SRC
 
-Finally, enable =evil= in =org-agenda=:
+   Finally, enable =evil= in =org-agenda=:
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package evil-org
   :after org
   :config
@@ -158,26 +179,31 @@ Finally, enable =evil= in =org-agenda=:
   (add-hook 'evil-org-mode-hook (λ! (evil-org-set-key-theme)))
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
-#+END_SRC
+   #+END_SRC
 
-* Replace Default Buffer with =dashboard=
+** Replace default buffer with =dashboard=
 
-The package =dashboard= replaces the sucky default buffer with a helpful
-list of recent files, projects and bookmarks. Additionally,
-=initial-buffer-choice= is set, so that new =emacsclients= also use this.
+   The package =dashboard= replaces the uncool default buffer with a
+   helpful list of recent files, projects and bookmarks. Additionally,
+   =initial-buffer-choice= is set, so that new =emacsclients= also use
+   this.
 
-#+BEGIN_SRC emacs-lisp
+   By default, =dashboard= and =evil= don't really play nice
+   together. Because of this, we need to create some wrappers to pass
+   keypresses through =evil= to =dashboard=.
+
+   #+BEGIN_SRC emacs-lisp
 (use-package dashboard
   :config
   (setq initial-buffer-choice (λ! (get-buffer "*dashboard*")))
   (setq dashboard-banner-logo-title "Emacs Dashboard")
   (setq dashboard-startup-banner "~/.emacs.d/logo.png")
   (setq dashboard-items '((projects . 5)
-                          (recents . 5)
+			  (recents . 5)
 			  (bookmarks . 5)
 			  (agenda . 5)))
   (setq dashboard-set-navigator t)
-  
+
   ;; some wrapper functions to make dashboard play nice with evil
   (defun dashboard-goto-projects ()
     (interactive)
@@ -201,66 +227,63 @@ list of recent files, projects and bookmarks. Additionally,
       "a" 'dashboard-goto-agenda
       "m" 'dashboard-goto-bookmarks)
   (dashboard-setup-startup-hook))
-#+END_SRC
+   #+END_SRC
 
-Additional keybinds for =dashboard=. Because =dashboard= shows
-bookmarks as well, setting up key bindings for bookmarks here too.
+   Additional convenience keybinds for =dashboard=.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 ;; Mnemonic "refresh"
 (evil-leader/set-key "d r" 'dashboard-refresh-buffer)
 ;; Mnemonic "buffer -> home"
 (evil-leader/set-key "b h" (defalias (make-symbol "buffer-home")
-                              (λ! (switch-to-buffer "*dashboard*"))))
+			      (λ! (switch-to-buffer "*dashboard*"))))
+   #+END_SRC
 
-;; Mnemonic "mark"
-(evil-leader/set-key "m m" 'bookmark-set)
-;; Mnemonic "delete"
-(evil-leader/set-key "m d" 'bookmark-delete)
-#+END_SRC
+** Theming/Appearance
 
-* Theming/Appearance
-  
-Use =fira= as default font. Also bump up the font size because my eyes are
-bad. Unfortunately, =emacs= does not support font ligatures (yet).
+   Use =fira= as default font. Also bump up the font size because my
+   eyes are bad. Unfortunately, =emacs= does not support font
+   ligatures (yet), so we're using Fira Mono as opposed to e.g. Fira
+   Code.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (set-default-font "Fira Mono 13")
 (setq default-frame-alist '((font . "Fira Mono 13")))
-#+END_SRC
+   #+END_SRC
 
-I use =nord-theme= for now. Emacs 24+ supports theming out of
-the box, so we just have to fetch the actual theme from MELPA and
-turn it on.
+   I use =nord-theme= for now. Emacs 24+ supports theming out of the
+   box, so we just have to fetch the actual theme from MELPA and turn
+   it on.
 
-Note that =nord= won't actually work with =emacsclient= because of
-an issue in the package. If you initialize a new config from this
-file you'll have to apply [https://github.com/arcticicestudio/nord-emacs/pull/68]
-if the issue is not yet fixed.
+   Note that =nord= won't actually work with =emacsclient= because of
+   an issue in the package. If you initialize a new config from this
+   file you'll have to apply
+   [https://github.com/arcticicestudio/nord-emacs/pull/68] if the
+   issue is not yet fixed.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package nord-theme
   :defer t
   :init
   (if (daemonp)
     (add-hook 'after-make-frame-functions
       (lambda (frame)
-        (load-theme 'nord t)))
+	(load-theme 'nord t)))
     (load-theme 'nord t)))
-#+END_SRC
+   #+END_SRC
 
-Next, load in the =powerline= from =spacemacs= as well.
+   Next, load in the =powerline= from =spacemacs= as well.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package spaceline
   :config
   (spaceline-spacemacs-theme))
-#+END_SRC
+   #+END_SRC
 
-I don't like/need things like the menu bars and scroll bars. Also set 
-buffers be transparent by default.
+   I don't like/need things like the menu bars and scroll bars. Also
+   set buffers to be slightly transparent by default.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode -1)
@@ -268,25 +291,34 @@ buffers be transparent by default.
 
 (set-frame-parameter (selected-frame) 'alpha '(95 . 75))
 (add-to-list 'default-frame-alist '(alpha . (95 . 75)))
-#+END_SRC
+   #+END_SRC
 
-* Linum Mode
+*** Linum Mode
 
-Always show line numbers, except in org mode where the folding breaks.
+    Always show line numbers, except in org mode where the folding
+    breaks.
 
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (setq linum-format "%d ")
 (global-linum-mode)
 (add-hook 'org-mode-hook (λ! (linum-mode 0)))
-#+END_SRC
+    #+END_SRC
 
-* FCI and Autofill
-  
-Activate =fill-column-indicator= to keep me from writing
-overly long lines. The indicator is disabled on all special buffers
-(wrapped in *s) and in =dired-mode=.
+    Set up a toggle to hide/show line numbers:
 
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
+
+;; Mnemonic "linum"
+(evil-leader/set-key "t l" 'linum-mode)
+    #+END_SRC
+
+*** FCI and Autofill
+
+    Activate =fill-column-indicator= to keep me from writing overly
+    long lines. The indicator is disabled on all special buffers
+    (wrapped in *'s) and in =dired-mode=.
+
+    #+BEGIN_SRC emacs-lisp
 (use-package fill-column-indicator
   :config
   (setq fci-rule-column 80)
@@ -299,41 +331,25 @@ overly long lines. The indicator is disabled on all special buffers
       (not (eq major-mode 'dired-mode)))
     (fci-mode 1))))
   (global-fci-mode 1))
-#+END_SRC
+    #+END_SRC
 
-* Toggles
-  
-The following keybinds toggle certain things that frequently need
-to be changed (mostly modes).
+    Finally setup shortcuts to toggle =fci-mode= and =auto-fill-mode=:
 
-#+BEGIN_SRC emacs-lisp
-;; Mnemonic "fill"
-(evil-leader/set-key "t f" 'auto-fill-mode)
+    #+BEGIN_SRC emacs-lisp
 ;; Mnemonic "indicator"
 (evil-leader/set-key "t i" 'fci-mode)
-;; Mnemonic "linum"
-(evil-leader/set-key "t l" 'linum-mode)
-#+END_SRC
+;; Mnemonic "fill"
+(evil-leader/set-key "t f" 'auto-fill-mode)
+    #+END_SRC
 
-* Quick File Access
+** Window Management
 
-Some files need to be edited a lot (mostly configs and
-org-journals). Provide some handy keybinds for them here. Update
-<2019-12-20 Fri>: this does not really work across machines. Removing
-file links for now.
+   First of all, use spacemacs's =winum= to get numbered windows for
+   easy switching, then bind =<Leader> {n}= to
+   =winum-select-window-{n}=. Please tell me if that can be done more
+   elegantly.
 
-#+BEGIN_SRC emacs-lisp
-; Mnemonic: "config"
-(evil-leader/set-key "f c" (defalias (make-symbol "edit-config")
-                              (λ! (find-file "~/.emacs.d/config.org"))))
-#+END_SRC
-
-* Window Management
-
-First of all, use spacemacs's =winum= to get numbered windows for easy switching,
-then bind =<Leader> {n}= to =winum-select-window-{n}=.
-
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package winum
   :config
   (evil-leader/set-key "1" 'winum-select-window-1)
@@ -347,59 +363,57 @@ then bind =<Leader> {n}= to =winum-select-window-{n}=.
   (evil-leader/set-key "9" 'winum-select-window-9)
   (setq winum-auto-setup-mode-line nil)
   (winum-mode 1))
-#+END_SRC
+   #+END_SRC
 
-Additionally, allow splitting windows using =w /= and =w -= . These windows
-will be automatically numbered by =winum= anyway.
+   Additionally, allow splitting windows using =w /= and =w -= . These
+   windows will be automatically numbered by =winum= anyway.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (evil-leader/set-key "w /" 'split-window-right)
 (evil-leader/set-key "w -" 'split-window-below)
-#+END_SRC
+   #+END_SRC
 
-Delete current window with =w d=.
+   Delete current window with =w d= and allow switching buffers with
+   =b p= and =b n=. Delete buffers with =b d=.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (evil-leader/set-key "w d" 'evil-window-delete)
-#+END_SRC
 
-Allow switching buffers with =b p= and =b n=. Delete buffers with =b d=.
-
-#+BEGIN_SRC emacs-lisp
 (evil-leader/set-key "b p" 'evil-prev-buffer)
 (evil-leader/set-key "b n" 'evil-next-buffer)
 (evil-leader/set-key "b d" 'evil-delete-buffer)
-#+END_SRC
+   #+END_SRC
 
-* =eshell=
+** =eshell=
 
-=eshell= is a built-in shell + terminal emulator that can be used
-cross-platform. Since it works very well with =evil= out of the box we
-only set up some keybinds here.
+   =eshell= is a built-in shell + terminal emulator that works
+   okay-ish cross-platform. Since it also works well with =evil= out
+   of the box we only set up some keybinds here.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 ;; Mnemonic "shell open"
 (evil-leader/set-key "s o" 'eshell)
-#+END_SRC
+   #+END_SRC
 
-* Lisp Trickery
+** Lisp Trickery
 
-Here is some setup to make lisp hacking a bit easier. The following
-snippet allows evaluating the currently selected expression or the
-whole buffer.
+   Here is some setup to make lisp hacking a bit easier. The following
+   snippet allows evaluating the currently selected expression or the
+   whole buffer.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (evil-leader/set-key "e l" 'eval-last-sexp)
 (evil-leader/set-key "e b" 'eval-buffer)
 (evil-leader/set-key "e e" 'eval-expression)
-#+END_SRC
+   #+END_SRC
 
-* Configure =helm=
+** Miscellaneous Package Configuration
+*** Configure =helm=
 
-Load in =helm=, a great framework for incremental completion,
-then, as always, set up keybinds with =evil=.
+    Load in =helm=, a great framework for incremental completion,
+    then, as always, set up keybinds with =evil=.
 
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package helm
   :config
   (evil-leader/set-key "<SPC>" 'helm-M-x)
@@ -409,35 +423,41 @@ then, as always, set up keybinds with =evil=.
   (setq helm-ff-skip-boring-files t)
   (customize-set-variable 'helm-boring-file-regexp-list (cons "^\\..+" helm-boring-file-regexp-list))
   (helm-mode 1))
-#+END_SRC
+    #+END_SRC
 
-Also get =helm-descbinds=, which allows to search for keybinds
-using =C-h=.
+    Also get =helm-descbinds=, which allows to search for keybinds
+    using =C-h=.
 
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package helm-descbinds
   :config
   (helm-descbinds-mode))
-#+END_SRC
+    #+END_SRC
 
-* Configure =which-key=
+*** Configure =which-key=
 
-=which-key= uses the minibuffer to interactively drill down into
-keybinds. Neato!
+    =which-key= uses the minibuffer to interactively drill down into
+    keybinds. Neato!
 
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :config
   (which-key-mode))
-#+END_SRC
-* Configure =projectile=
+    #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+*** Configure =projectile=
+
+    Projectile allows convenient features like fuzzy file search or
+    grepping on files within a project. Projects can either be
+    version-controlled folders or folders manually marked by a
+    =.projectile= file.
+
+    #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :config
   (setq projectile-completion-system 'helm)
   (setq projectile-indexing-method 'alien))
- 
+
 (use-package helm-projectile
   :config
   (evil-leader/set-key "p f" 'helm-projectile-find-file)
@@ -449,21 +469,21 @@ keybinds. Neato!
 (use-package helm-ag
   :config
   (evil-leader/set-key "p g" 'projectile-ag))
+    #+END_SRC
 
-#+END_SRC
+*** Configure =org-pomodoro=
 
-* Configure =org-pomodoro=
+    Org-pomodoro allows starting pomodoros on org tasks, automatically
+    tracking spent time and playing audio notifications when pomodoros
+    and breaks start/end.
 
-Org-pomodoro allows starting pomodoros on org tasks , automatically
-tracking spent time and playing audio notifications when pomodoros and
-breaks start/end.
+    The default modeline sucks, so I'm using the package's hooks to
+    write to a file that I display on my =i3bar=.
 
-The default modeline sucks, so I'm using the package's hooks to write
-to a file that I display on my =i3bar=.
+    The only problem is, this doesn't exactly work and I didn't find
+    the time to fix it.
 
-This doesn't exactly work :/
-
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 
 (setq jwinkler-org-pomodoro-minutes 0)
 (setq jwinkler-org-pomodoro-file "~/tmp/.org-pomodoro")
@@ -489,7 +509,7 @@ This doesn't exactly work :/
    the temporary file to say inactive."
   (with-temp-file jwinkler-org-pomodoro-file
     (insert "done."))
-)   
+)
 
 (use-package org-pomodoro
 ;;  :config
@@ -497,11 +517,14 @@ This doesn't exactly work :/
 ;;  (add-hook 'org-pomodoro-tick-hook 'pomodoro-tick)
 ;;  (add-hook 'org-pomodoro-finished-hook 'pomodoro-done)
 )
-#+END_SRC
+    #+END_SRC
 
-* Configure =vhdl-mode=
+*** Configure =vhdl-mode=
 
-#+BEGIN_SRC emacs-lisp
+    In my job I write a lot of VHDL. Setting up the configuration
+    options for code snippets and language standard.
+
+    #+BEGIN_SRC emacs-lisp
 (setq vhdl-company-name "Silicon Austria Labs <jakob.winkler@silicon-austria.com")
 (setq vhdl-standard (quote (8 nil)))
 (setq vhdl-clock-name "clk_i")
@@ -536,17 +559,17 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 ")
-#+END_SRC
+    #+END_SRC
 
-* Get some more packages
+*** Even more random packages
 
-This is the place to add more packages that don't require a lot of
-configuration.
+    This is the place to add more packages that don't require a lot of
+    configuration.
 
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+	 ("\\.md\\'" . markdown-mode)
+	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
-#+END_SRC
+    #+END_SRC
