@@ -573,3 +573,16 @@ use ieee.numeric_std.all;
 	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
     #+END_SRC
+
+    Fetch =magit=, intended to be a complete git porcelain within
+    emacs.
+    
+    #+BEGIN_SRC emacs-lisp
+(use-package evil-magit)    
+
+(evil-leader/set-key "g s" 'magit-status)
+(evil-leader/set-key "g o" 'magit-show-commit)
+(evil-leader/set-key "g d" 'magit-diff)
+(evil-leader/set-key "g c" 'magit-commit)
+    #+END_SRC
+    
