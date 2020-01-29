@@ -89,6 +89,8 @@
 (evil-leader/set-key "m m" 'bookmark-set)
 ;; Mnemonic "delete"
 (evil-leader/set-key "m d" 'bookmark-delete)
+;; Mnemonic "delete"
+(evil-leader/set-key "m j" 'bookmark-jump)
    #+END_SRC
 
    Additionally, setup keybinds for some not-so-default functionality
@@ -584,5 +586,7 @@ use ieee.numeric_std.all;
 (evil-leader/set-key "g o" 'magit-show-commit)
 (evil-leader/set-key "g d" 'magit-diff)
 (evil-leader/set-key "g c" 'magit-commit)
+(evil-leader/set-key "g r" 'magit-rebase)
+(evil-leader/set-key "g m" 'magit-merge)
     #+END_SRC
     
