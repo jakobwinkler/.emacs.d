@@ -563,6 +563,42 @@ use ieee.numeric_std.all;
 ")
     #+END_SRC
 
+    Additionally, adding a keybind to toggle stutter mode.
+
+    #+BEGIN_SRC emacs-lisp
+;; Mnemonic "toggle stutter"
+(evil-leader/set-key "t s" 'vhdl-stutter-mode)
+    #+END_SRC
+
+*** Configure =scala= packages
+
+    For =scala=, I use the metals LSP interface from
+    scalameta.org. They provide an example configuration which I
+    simply pasted here. Let's see if this works out.
+
+    #+BEGIN_SRC emacs-lisp
+;; Enable scala-mode and sbt-mode
+(use-package scala-mode
+  :mode "^\w+\\.s\\(cala\\|bt\\)$")
+
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
+
+(use-package eglot
+  :pin melpa-stable
+  :config
+  (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
+  ;; (optional) Automatically start metals for Scala files.
+  :hook (scala-mode . eglot-ensure))    
+    #+END_SRC
+
 *** Even more random packages
 
     This is the place to add more packages that don't require a lot of
@@ -578,9 +614,9 @@ use ieee.numeric_std.all;
 
     Fetch =magit=, intended to be a complete git porcelain within
     emacs.
-    
+
     #+BEGIN_SRC emacs-lisp
-(use-package evil-magit)    
+(use-package evil-magit)
 
 (evil-leader/set-key "g s" 'magit-status)
 (evil-leader/set-key "g o" 'magit-show-commit)
@@ -589,4 +625,3 @@ use ieee.numeric_std.all;
 (evil-leader/set-key "g r" 'magit-rebase)
 (evil-leader/set-key "g m" 'magit-merge)
     #+END_SRC
-    
