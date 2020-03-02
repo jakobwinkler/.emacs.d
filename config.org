@@ -83,11 +83,11 @@
 ;; Mnemonic "file save"
 (evil-leader/set-key "f s" 'save-buffer)
 
-;; Mnemonic "mark"
+;; Mnemonic "mark mark"
 (evil-leader/set-key "m m" 'bookmark-set)
-;; Mnemonic "delete"
+;; Mnemonic "mark delete"
 (evil-leader/set-key "m d" 'bookmark-delete)
-;; Mnemonic "delete"
+;; Mnemonic "mark jump"
 (evil-leader/set-key "m j" 'bookmark-jump)
    #+END_SRC
 
@@ -95,7 +95,7 @@
    I like to use:
 
    #+BEGIN_SRC emacs-lisp
-; Mnemonic: "config"
+; Mnemonic: "file config"
 (evil-leader/set-key "f c" (defalias (make-symbol "edit-config")
 			      (λ! (find-file "~/.emacs.d/config.org"))))
    #+END_SRC
@@ -246,9 +246,9 @@
    Additional convenience keybinds for =dashboard=.
 
    #+BEGIN_SRC emacs-lisp
-;; Mnemonic "refresh"
+;; Mnemonic "dashboard refresh"
 (evil-leader/set-key "d r" 'dashboard-refresh-buffer)
-;; Mnemonic "buffer -> home"
+;; Mnemonic "buffer home"
 (evil-leader/set-key "b h" (defalias (make-symbol "buffer-home")
 			      (λ! (switch-to-buffer "*dashboard*"))))
    #+END_SRC
@@ -322,7 +322,7 @@
 
     #+BEGIN_SRC emacs-lisp
 
-;; Mnemonic "linum"
+;; Mnemonic "toggle linum"
 (evil-leader/set-key "t l" 'linum-mode)
     #+END_SRC
 
@@ -371,8 +371,9 @@
 ** =eshell=
 
    =eshell= is a built-in shell + terminal emulator that works
-   okay-ish cross-platform. Since it also works well with =evil= out
-   of the box we only set up some keybinds here.
+   okay-ish cross-platform (I use this config on Windows and Linux
+   systems). Since it also works well with =evil= out of the box we
+   only set up some keybinds here.
 
    #+BEGIN_SRC emacs-lisp
 ;; Mnemonic "shell open"
@@ -381,10 +382,10 @@
 
 ** Navigation with =helm= and =which-key=
 
-    Load in =helm=, a great framework for incremental completion,
-    then, as always, set up keybinds with =evil=.
+   Load in =helm=, a great framework for incremental completion,
+   then, as always, set up keybinds with =evil=.
 
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package helm
   :config
   (evil-leader/set-key "<SPC>" 'helm-M-x)
@@ -394,34 +395,34 @@
   (setq helm-ff-skip-boring-files t)
   (customize-set-variable 'helm-boring-file-regexp-list (cons "^\\..+" helm-boring-file-regexp-list))
   (helm-mode 1))
-    #+END_SRC
+   #+END_SRC
 
-    Also get =helm-descbinds=, which allows to search for keybinds
-    using =C-h=.
+   Also get =helm-descbinds=, which allows to search for keybinds
+   using =C-h=.
 
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package helm-descbinds
   :config
   (helm-descbinds-mode))
-    #+END_SRC
+   #+END_SRC
 
-    =which-key= uses the minibuffer to interactively drill down into
-    keybinds. Neato!
+   =which-key= uses the minibuffer to interactively drill down into
+   keybinds. Neato!
 
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :config
   (which-key-mode))
-    #+END_SRC
+   #+END_SRC
 
 ** Projects with =projectile= and =magit=
 
-    Projectile allows convenient features like fuzzy file search or
-    grepping on files within a project. Projects can either be
-    version-controlled folders or folders manually marked by a
-    =.projectile= file.
+   Projectile allows convenient features like fuzzy file search or
+   grepping on files within a project. Projects can either be
+   version-controlled folders or folders manually marked by a
+   =.projectile= file.
 
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :config
   (setq projectile-completion-system 'helm)
@@ -438,12 +439,12 @@
 (use-package helm-ag
   :config
   (evil-leader/set-key "p g" 'projectile-ag))
-    #+END_SRC
+   #+END_SRC
 
-    Fetch =magit=, intended to be a complete git porcelain within
-    emacs.
+   Fetch =magit=, intended to be a complete git porcelain within
+   emacs.
 
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package evil-magit)
 
 (evil-leader/set-key "g s" 'magit-status)
@@ -452,20 +453,20 @@
 (evil-leader/set-key "g c" 'magit-commit)
 (evil-leader/set-key "g r" 'magit-rebase)
 (evil-leader/set-key "g m" 'magit-merge)
-    #+END_SRC
+   #+END_SRC
 
 ** Time tracking with =org-pomodoro=
 
-    Org-pomodoro allows starting pomodoros on org tasks, automatically
-    tracking spent time and playing audio notifications when pomodoros
-    and breaks start/end.
+   Org-pomodoro allows starting pomodoros on org tasks, automatically
+   tracking spent time and playing audio notifications when pomodoros
+   and breaks start/end.
 
-    I don't really like the default modeline but haven't gotten around
-    to implementing something better.
+   I don't really like the default modeline but haven't gotten around
+   to implementing something better.
 
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package org-pomodoro)
-    #+END_SRC
+   #+END_SRC
 
 ** Language Specific Configs
 *** =vhdl-mode=
@@ -519,12 +520,12 @@ use ieee.numeric_std.all;
 
 *** =scala=
 
-    For =scala=, I use the metals LSP interface from
-    scalameta.org. They provide an example configuration which I
-    simply pasted here. Let's see if this works out.
-
+    For =scala= (mainly =chisel=, honestly), I use the metals LSP
+    interface from scalameta.org. They provide an example
+    configuration which I simply pasted here. Additionally we globally
+    load =company= to allow for in-line dropdowns for auto-completion.
+    
     #+BEGIN_SRC emacs-lisp
-;; Enable scala-mode and sbt-mode
 (use-package scala-mode
   :mode "^\w+\\.s\\(cala\\|bt\\)$")
 
@@ -551,10 +552,7 @@ use ieee.numeric_std.all;
   (global-company-mode))
     #+END_SRC
 
-*** Markdown Suppport
-
-    This is the place to add more packages that don't require a lot of
-    configuration.
+*** Markdown
 
     #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
