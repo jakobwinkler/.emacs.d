@@ -316,36 +316,6 @@
 (evil-leader/set-key "t l" 'linum-mode)
     #+END_SRC
 
-*** FCI and Autofill
-
-    Activate =fill-column-indicator= to keep me from writing overly
-    long lines. The indicator is disabled on all special buffers
-    (wrapped in *'s) and in =dired-mode=.
-
-    #+BEGIN_SRC emacs-lisp
-(use-package fill-column-indicator
-  :config
-  (setq fci-rule-column 80)
-  (setq fci-rule-use-dashes 1)
-  (setq fci-rule-width 1)
-  (define-globalized-minor-mode global-fci-mode fci-mode
-  (lambda ()
-    (if (and
-      (not (string-match "^\*.*\*$" (buffer-name)))
-      (not (eq major-mode 'dired-mode)))
-    (fci-mode 1))))
-  (global-fci-mode 1))
-    #+END_SRC
-
-    Finally setup shortcuts to toggle =fci-mode= and =auto-fill-mode=:
-
-    #+BEGIN_SRC emacs-lisp
-;; Mnemonic "indicator"
-(evil-leader/set-key "t i" 'fci-mode)
-;; Mnemonic "fill"
-(evil-leader/set-key "t f" 'auto-fill-mode)
-    #+END_SRC
-
 ** Window Management
 
    First of all, use spacemacs's =winum= to get numbered windows for
@@ -587,18 +557,23 @@ use ieee.numeric_std.all;
   :commands sbt-start sbt-command
   :config
   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-  ;; allows using SPACE when in the minibuffer
+  ;; allows using SPC when in the minibuffer
   (substitute-key-definition
    'minibuffer-complete-word
    'self-insert-command
    minibuffer-local-completion-map))
 
 (use-package eglot
-  :pin melpa-stable
   :config
   (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
-  ;; (optional) Automatically start metals for Scala files.
+  ;; automatically start metals for Scala files.
+  (global-set-key [?\C- ] 'complete-symbol)
   :hook (scala-mode . eglot-ensure))    
+
+;; TODO: move this somewhere else?
+(use-package company
+  :config
+  (global-company-mode))
     #+END_SRC
 
 *** Even more random packages
@@ -627,3 +602,4 @@ use ieee.numeric_std.all;
 (evil-leader/set-key "g r" 'magit-rebase)
 (evil-leader/set-key "g m" 'magit-merge)
     #+END_SRC
+    
