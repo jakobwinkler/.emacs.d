@@ -128,6 +128,8 @@
 (evil-leader/set-key "o c" 'org-capture)
 ;; Mnemonic "org refile"
 (evil-leader/set-key "o r" 'org-refile)
+;; Mnemonic "org file"
+(evil-leader/set-key "o f" 'org-agenda-file-to-front)
    #+END_SRC
 
    This part is mainly about configuring my work inside of =org=
