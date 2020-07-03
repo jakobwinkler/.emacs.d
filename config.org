@@ -426,7 +426,8 @@
 (use-package projectile
   :config
   (setq projectile-completion-system 'helm)
-  (setq projectile-indexing-method 'alien))
+  (setq projectile-indexing-method 'alien)
+  (setq projectile-globally-ignored-file-suffixes '(".png" ".jpg" ".gif" ".woff" ".woff2" ".ttf" ".cache")))
 
 (use-package helm-projectile
   :config
