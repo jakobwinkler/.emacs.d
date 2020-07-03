@@ -125,6 +125,7 @@
 				(org-agenda-files :maxlevel . 9)))
 (setq org-outline-path-complete-in-steps nil)
 (setq org-refile-use-outline-path t)
+(setq org-default-notes-file "~/org/main.org")
 
 ;; Mnemonic "org agenda"
 (evil-leader/set-key "o a" 'org-agenda)
