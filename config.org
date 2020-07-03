@@ -476,7 +476,7 @@
     options for code snippets and language standard.
 
     #+BEGIN_SRC emacs-lisp
-(setq vhdl-company-name "Silicon Austria Labs <jakob.winkler@silicon-austria.com")
+(setq vhdl-company-name "FH Oberoesterreich <jakob.winkler@fh-hagenberg.at>")
 (setq vhdl-standard (quote (8 nil)))
 (setq vhdl-clock-name "clk_i")
 (setq vhdl-reset-name "reset_in")
