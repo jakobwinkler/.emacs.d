@@ -257,13 +257,12 @@
 ** Theming/Appearance
 
    Use =fira= as default font. Also bump up the font size because my
-   eyes are bad. Unfortunately, =emacs= does not support font
-   ligatures (yet), so we're using Fira Mono as opposed to e.g. Fira
-   Code.
+   eyes are bad. =emacs= does not support font ligatures (yet), but 
+   Fira Code is still more beautiful than Fira Mono.
 
    #+BEGIN_SRC emacs-lisp
-(set-default-font "Fira Mono 13")
-(setq default-frame-alist '((font . "Fira Mono 13")))
+(set-default-font "Fira Code 13")
+(setq default-frame-alist '((font . "Fira Code 13")))
    #+END_SRC
 
    I use =nord-theme= for now. Emacs 24+ supports theming out of the
