@@ -2,7 +2,7 @@
 
 This is an emacs configuration heavily inspired by 
 [[http://spacemacs.org/][Spacemacs]] and 
-[[https://github.com/hrs/dotfiles/tree/master/emacs][Harry Schwartz's config]].
+[[https://github.com/hrs/dotfiles/tree/main/emacs/dot-emacs.d][Harry Schwartz's config]].
 
 There's some boilerplate setup code in
 [[https://github.com/jakobwinkler/.emacs.d/blob/master/init.el][init.el]],
