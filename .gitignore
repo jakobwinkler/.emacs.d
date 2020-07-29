@@ -1,0 +1,14 @@
+# the generated configuration file
+config.el
+
+# emacs writes settings you apply through the config menus to init.el,
+# but we want to move that to config.org anyways. exclude init.el so
+# we don't pollute it accidentally.
+init.el
+
+# installed packages and emacs temporaries
+elpa/
+transient/
+auto-save-list/
+projectile-bookmarks.eld
+recentf
