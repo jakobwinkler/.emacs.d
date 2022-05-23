@@ -58,7 +58,9 @@
    =evil-leader= keybinds.
 
    #+BEGIN_SRC emacs-lisp
+;; https://github.com/emacs-evil/evil-collection/issues/60
 (setq evil-want-abbrev-expand-on-insert-exit nil)
+(setq evil-want-keybinding nil)
 (use-package evil
   :config
   (evil-mode 1))
@@ -451,7 +453,8 @@
    emacs.
 
    #+BEGIN_SRC emacs-lisp
-(use-package evil-magit)
+(use-package magit)
+(use-package evil-collection)
 
 (evil-leader/set-key "g s" 'magit-status)
 (evil-leader/set-key "g o" 'magit-show-commit)
