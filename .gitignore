@@ -10,5 +10,7 @@ init.el
 elpa/
 transient/
 auto-save-list/
+eshell
 projectile-bookmarks.eld
 recentf
+bookmarks
