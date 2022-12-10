@@ -13,6 +13,7 @@
    the following sections.
 
    #+BEGIN_SRC emacs-lisp
+(require 'use-package-ensure)
 (setq use-package-always-ensure t)
 
 (use-package auto-compile
@@ -266,31 +267,30 @@
    setting in a comment.
    
    #+BEGIN_SRC emacs-lisp
-   (set-default-font "Cascadia Code PL 13")
-   (setq default-frame-alist '((font . "Cascadia Code PL 13")))
-   ;; (set-default-font "Cascadia Mono PL 13")
-   ;; (setq default-frame-alist '((font . "Cascadia Mono PL 13")))
+   (set-frame-font "Cascadia Code PL 16")
+   (setq default-frame-alist '((font . "Cascadia Code PL 16")))
+   ;; to disable ligatures:
+   ;; (set-default-font "Cascadia Mono PL 16")
+   ;; (setq default-frame-alist '((font . "Cascadia Mono PL 16")))
    #+END_SRC
 
    I use =nord-theme= for now. Emacs 24+ supports theming out of the
    box, so we just have to fetch the actual theme from MELPA and turn
    it on.
 
-   Note that =nord= won't actually work with =emacsclient= because of
-   an issue in the package. If you initialize a new config from this
-   file you'll have to apply
-   [https://github.com/arcticicestudio/nord-emacs/pull/68] if the
-   issue is not yet fixed.
+   This contains a workaround for an issue where =emacsclient= won't
+   find the color definitions depending on how Emacs was compiled.
+   See: [https://github.com/arcticicestudio/nord-emacs/issues/59#issuecomment-359214574]
 
    #+BEGIN_SRC emacs-lisp
-;; (use-package nord-theme
-;;   :defer t
-;;   :init
-;;   (if (daemonp)
-;;     (add-hook 'after-make-frame-functions
-;;       (lambda (frame)
-;; 	(load-theme 'nord t)))
-;;     (load-theme 'nord t)))
+ (use-package nord-theme
+   :defer t
+   :init
+   (if (daemonp)
+     (add-hook 'after-make-frame-functions
+       (lambda (frame)
+         (with-selected-frame frame (load-theme 'nord t))))
+    (load-theme 'nord t)))
    #+END_SRC
 
    Next, load in the =powerline= from =spacemacs= as well.
@@ -464,18 +464,12 @@
 (evil-leader/set-key "g m" 'magit-merge)
    #+END_SRC
 
-** Time tracking with =org-pomodoro=
+** Syntax checking with =flycheck=
 
-   Org-pomodoro allows starting pomodoros on org tasks, automatically
-   tracking spent time and playing audio notifications when pomodoros
-   and breaks start/end.
-
-   I don't really like the default modeline but haven't gotten around
-   to implementing something better.
-
-   #+BEGIN_SRC emacs-lisp
-(use-package org-pomodoro)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :init (global-flycheck-mode))
+#+END_SRC emacs-lisp
 
 ** Language Specific Configs
 *** =vhdl-mode=
@@ -550,3 +544,24 @@ context vunit_lib.vunit_context;
 	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
     #+END_SRC
+
+*** MATLAB
+
+    Yeah, I don't know either.
+
+    Actually, MATLAB on Linux has issues with my keyboard layout
+    (de-neo), so this seems like a reasonable solution.
+
+#+BEGIN_SRC emacs-lisp
+(use-package matlab
+  :ensure matlab-mode
+  :config
+  (add-to-list
+    'auto-mode-alist
+    '("\\.m\\'" . matlab-mode))
+  (setq matlab-indent-function t)
+  (setq matlab-shell-command "~/.local/bin/matlab")
+  (setq matlab-shell-command-switches (list "-nodesktop" "-nosplash"))
+  (setq mlint-programs (list "~/MATLAB/R2022b/bin/glnxa64/mlint")))
+#+END_SRC
+
